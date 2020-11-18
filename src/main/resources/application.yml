@@ -1,0 +1,15 @@
+micronaut:
+  application:
+    name: demoVertxMysql
+vertx:
+  mysql:
+    client:
+      port: 3306
+      host: localhost
+      database: mydb
+      user: root
+      password: q
+      maxSize: 5
+kafka.bootstrap.servers: localhost:9092
+
+

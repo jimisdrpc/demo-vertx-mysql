@@ -1,0 +1,6 @@
+applicationType: messaging
+defaultPackage: com.mybank
+testFramework: junit
+sourceLanguage: kotlin
+buildTool: gradle
+features: [annotation-api, app-name, gradle, junit, kafka, kotlin, kotlin-application, logback, readme, shade, vertx-mysql-client, yaml]
