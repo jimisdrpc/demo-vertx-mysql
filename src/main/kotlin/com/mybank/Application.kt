@@ -19,27 +19,52 @@ internal class BaseVerticle : AbstractVerticle() {
 
 		var client = MySQLPool.pool(vertx, connectOptions, poolOptions)
 
-		client.query("INSERT INTO mytable('id','name') VALUES ('2','Jimis2')").execute { ar ->
-			if (ar.succeeded()) {
-				var rows = ar.result()
+
+		client.query("INSERT INTO mytable('id','name') VALUES (2,'Jimis2')").execute { insert ->
+			if (insert.succeeded()) {
+
+				var rows = insert.result()
 				var lastInsertId = rows.property(MySQLClient.LAST_INSERTED_ID)
 				println("Last inserted id is: ${lastInsertId}")
+
+				client.query("SELECT * FROM mytable WHERE id=1").execute { select ->
+					if (select.succeeded()) {
+						var result = select.result()
+						println("Got ${result.size()} rows ")
+					} else {
+						select.cause().printStackTrace()
+					}
+
+					client.close()
+				}
+
 			} else {
-				println("Failure: ${ar.cause().printStackTrace()}")
+				insert.cause().printStackTrace()
+				client.close()
 			}
 		}
 
-		client.query("SELECT * FROM mytable WHERE id=1").execute { ar ->
-			if (ar.succeeded()) {
-				var result = ar.result()
-				println("Got ${result.size()} rows ")
-			} else {
-				println("Failure: ${ar.cause().stackTrace}")
-			}
-
-			// Now close the pool
-			client.close()
-		}
+//		client.query("INSERT INTO mytable('id','name') VALUES ('2','Jimis2')").execute { ar ->
+//			if (ar.succeeded()) {
+//				var rows = ar.result()
+//				var lastInsertId = rows.property(MySQLClient.LAST_INSERTED_ID)
+//				println("Last inserted id is: ${lastInsertId}")
+//			} else {
+//				println("Failure: ${ar.cause().printStackTrace()}")
+//			}
+//		}
+//
+//		client.query("SELECT * FROM mytable WHERE id=1").execute { ar ->
+//			if (ar.succeeded()) {
+//				var result = ar.result()
+//				println("Got ${result.size()} rows ")
+//			} else {
+//				println("Failure: ${ar.cause().stackTrace}")
+//			}
+//
+//			// Now close the pool
+//			client.close()
+//		}
 
 	}
 	override fun stop() {
@@ -50,6 +75,7 @@ internal class BaseVerticle : AbstractVerticle() {
 val vertx = Vertx.vertx()
 
 fun main() {
-	//val vertx = Vertx.vertx()
+	val vertx = Vertx.vertx()
 	vertx.deployVerticle(BaseVerticle())
+	//vertx.deployVerticle(BaseVerticle()).onFailure { it.printStackTrace() }
 }
